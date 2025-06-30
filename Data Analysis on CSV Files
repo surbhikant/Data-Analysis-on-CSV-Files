@@ -1,0 +1,41 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+
+# Define the file path
+file_path = 'sales_data.csv'
+
+# Check if the file exists
+if os.path.exists(file_path):
+    try:
+        # Attempt to read the CSV file
+        df = pd.read_csv(file_path)
+
+        # Check if the DataFrame is empty
+        if df.empty:
+            print("The CSV file is empty.")
+        else:
+            # Calculate the 'Revenue' column
+            df['Revenue'] = df['Quantity'] * df['Price']
+
+            # Group by 'Product' and sum the 'Revenue'
+            product_revenue = df.groupby('Product')['Revenue'].sum().sort_values(ascending=False)
+
+            # Plot the total revenue by product
+            plt.figure(figsize=(10, 6))
+            product_revenue.plot(kind='bar', color='skyblue')
+            plt.title('Total Revenue by Product')
+            plt.xlabel('Product')
+            plt.ylabel('Revenue')
+            plt.xticks(rotation=45, ha='right')
+            plt.tight_layout()
+            plt.show()
+
+    except pd.errors.EmptyDataError:
+        print("Error: The file is empty or contains no columns.")
+    except pd.errors.ParserError:
+        print("Error: There was an issue parsing the file. It may be malformed.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+else:
+    print(f"Error: The file '{file_path}' does not exist.")
